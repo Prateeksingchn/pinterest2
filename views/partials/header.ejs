@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pinterest Clone</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="/stylesheets/feed.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white">
+  <% if(nav === true){ %>
+    <header class="w-full px-4 py-2 flex items-center justify-between bg-white border-b border-gray-200">
+      <div class="flex items-center">
+        <a href="/feed" class="flex items-center">
+          <i class="ri-pinterest-fill text-2xl text-red-600 mr-2"></i>
+          <span class="font-bold text-gray-900">Pinterest</span>
+        </a>
+        <nav class="ml-4 space-x-2">
+          <a href="/feed" class="px-3 py-2 rounded-full hover:bg-gray-100 text-gray-700 font-semibold">Home</a>
+          <a href="/explore" class="px-3 py-2 rounded-full hover:bg-gray-100 text-gray-700 font-semibold">Explore</a>
+          <a href="/add" class="px-3 py-2 rounded-full hover:bg-gray-100 text-gray-700 font-semibold">Create</a>
+        </nav>
+      </div>
+      <div class="flex-grow mx-4">
+        <div class="relative">
+          <input type="text" placeholder="Search" class="w-full py-2 pl-10 pr-4 rounded-full bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-200">
+          <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="#" class="text-gray-700 hover:bg-gray-100 p-2 rounded-full">
+          <i class="ri-notification-3-line text-xl"></i>
+        </a>
+        <a href="#" class="text-gray-700 hover:bg-gray-100 p-2 rounded-full">
+          <i class="ri-message-2-line text-xl"></i>
+        </a>
+        <a href="/profile" class="text-gray-700 hover:bg-gray-100 p-2 rounded-full">
+          <img src="/images/uploads/<%= user.profileImage %>" alt="Profile" class="w-6 h-6 rounded-full">
+        </a>
+      </div>
+    </header>
+  <% } %>

@@ -1,0 +1,70 @@
+<%- include('./partials/header.ejs') %>
+
+<div class="min-h-screen px-4 py-8 ">
+  <div class="max-w-[1280px] mx-auto">
+    <div id="masonry-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <% posts.forEach(function(elem){ %>
+        <div class="break-inside-avoid mb-4">
+          <a href="/open/posts/<%= elem._id %>" class="block">
+            <div class="bg-zinc-50 rounded-xl transition-all duration-300 hover:shadow-xl hover:rounded-xl hover:-translate-y-1">
+              <div class="relative pb-[100%] overflow-hidden rounded-lg">
+                <img class="absolute top-0 left-0 w-full h-full object-cover" src="/images/uploads/<%= elem.image %>" alt="<%= elem.title %>">
+              </div>
+              <div class="p-4">
+                <h5 class="font-semibold text-gray-800 mb-2 line-clamp-2"><%= elem.title %></h5>
+                <div class="flex items-center">
+                  <img class="w-6 h-6 rounded-full mr-2" src="/images/uploads/<%= elem.user.profileImage %>" alt="<%= elem.user.username %>">
+                  <h6 class="text-sm text-gray-600">@<%= elem.user.username %></h6>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Infinite scroll simulation
+  window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+      // You would typically load more posts here
+      console.log('Load more posts...');
+    }
+  });
+
+  // Masonry layout adjustment (optional, for more precise layout)
+  function adjustMasonryLayout() {
+    const container = document.getElementById('masonry-container');
+    const items = container.children;
+    let maxHeight = 0;
+    for (let i = 0; i < items.length; i++) {
+      const itemHeight = items[i].getBoundingClientRect().height;
+      if (itemHeight > maxHeight) {
+        maxHeight = itemHeight;
+      }
+    }
+    container.style.columnGap = '16px'; // Adjust the gap between columns
+    container.style.columnRuleColor = 'transparent';
+  }
+
+  window.addEventListener('load', adjustMasonryLayout);
+  window.addEventListener('resize', adjustMasonryLayout);
+</script>
+
+<style>
+  /* Custom styles for Pinterest-like feed */
+  #masonry-container {
+    column-gap: 16px;
+  }
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
+  /* Add smooth transition for hover effects */
+  .transition-all {
+    transition: all 0.3s ease;
+  }
+</style>
+
+<%- include('./partials/footer.ejs') %>

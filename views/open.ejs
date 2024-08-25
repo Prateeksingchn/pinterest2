@@ -1,0 +1,31 @@
+<% include ./partials/header.ejs %>
+
+
+<div class="bg-gray-500">
+    <div class="container mx-auto p-12 flex justify-center items-start">
+        <!-- Left-hand side - User's posts -->
+        <div class="w-1/2">
+            <!-- User's posts here -->
+            <div class="mb-4 w-[82%] h-[97%]">
+                <img src="/images/uploads/<%= post.image %>" alt="User's Post" class="w-full rounded-lg shadow-lg">
+            </div>
+        </div>
+
+        <!-- Post details -->
+        <div class="w-1/2">
+            <!-- Post Title and User Name -->
+            <div class="mb-4">
+                <h2 class="text-xl font-semibold"><%= post.title %></h2>
+                <p class="text-gray-600"><%= post.username %></p>
+            </div>
+
+            <!-- Post Description -->
+            <div>
+                <p class="text-gray-700">@<%=user.username %><</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<% include ./partials/footer.ejs %>

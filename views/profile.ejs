@@ -1,0 +1,125 @@
+<% include ./partials/header.ejs %>
+
+<div class="profile w-full min-h-screen bg-gray-100 text-gray-800 pt-1">
+    <form id="uploadform" hidden action="/fileupload" method="post" enctype="multipart/form-data">
+        <input type="file" name="image">
+    </form>
+    
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Your Profile</h1>
+            <a href="/" class="px-4 py-2 bg-red-600 text-white rounded-full text-sm font-semibold hover:bg-red-700 transition duration-300">Log out</a>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex flex-col md:flex-row items-center md:items-start">
+                <div class="relative mb-4 md:mb-0 md:mr-8">
+                    <div class="w-32 h-32 bg-gray-200 rounded-full overflow-hidden">
+                        <img class="w-full h-full object-cover" src="/images/uploads/<%= user.profileImage %>" alt="Profile Picture">
+                    </div>
+                    <button id="uploadicon" class="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-100 transition duration-300">
+                        <i class="text-gray-600 ri-pencil-fill"></i>
+                    </button>
+                </div>
+                <div class="text-center md:text-left">
+                    <h2 class="text-2xl font-semibold"><%= user.fullname %></h2>
+                    <p class="text-gray-600 mb-4">@<%= user.username %></p>
+                    <div class="space-x-2">
+                        <a href="/edit" class="px-4 py-2 bg-gray-200 rounded-full text-sm font-semibold hover:bg-gray-300 transition duration-300">Edit profile</a>
+                        <a href="/add" class="px-4 py-2 bg-red-600 text-white rounded-full text-sm font-semibold hover:bg-red-700 transition duration-300">Add New Pin</a>
+                        <button id="createBoardBtn" class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold hover:bg-blue-700 transition duration-300">Create Board</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-8">
+            <h3 class="text-2xl font-semibold mb-4">Your Boards</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <% if (user.boards && user.boards.length > 0) { %>
+                    <% user.boards.forEach(function(board) { %>
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="h-40 bg-gray-200">
+                                <!-- Display board cover image here if available -->
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-semibold mb-1"><%= board.name %></h4>
+                                <p class="text-sm text-gray-600"><%= board.description %></p>
+                                <!-- If you have a pins array in your board model -->
+                                <!-- <p class="text-sm text-gray-600"><%= board.pins ? board.pins.length : 0 %> pins</p> -->
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p>You haven't created any boards yet.</p>
+                <% } %>
+            </div>
+        </div>
+        
+        <div>
+            <h3 class="text-2xl font-semibold mb-4">Your Pins</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <% user.posts.forEach(function(post) { %>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img class="w-full h-48 object-cover" src="/images/uploads/<%= post.image %>" alt="<%= post.title %>">
+                        <div class="p-4">
+                            <h4 class="font-semibold text-sm mb-1 truncate"><%= post.title %></h4>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Board Modal -->
+<div id="createBoardModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h2 class="text-2xl font-semibold mb-4">Create a New Board</h2>
+        <form action="/create-board" method="post">
+            <div class="mb-4">
+                <label for="boardName" class="block text-sm font-medium text-gray-700 mb-2">Board Name</label>
+                <input type="text" id="boardName" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+            </div>
+            <div class="mb-4">
+                <label for="boardDescription" class="block text-sm font-medium text-gray-700 mb-2">Description (optional)</label>
+                <textarea id="boardDescription" name="description" class="w-full px-3 py-2 border border-gray-300 rounded-md" rows="3"></textarea>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" id="cancelCreateBoard" class="px-4 py-2 bg-gray-200 rounded-md text-sm font-semibold hover:bg-gray-300 transition duration-300">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-semibold hover:bg-red-700 transition duration-300">Create Board</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelector("#uploadicon").addEventListener("click", function () {
+        document.querySelector("#uploadform input").click();
+    });
+
+    document.querySelector("#uploadform input").addEventListener("change", function(){
+        document.querySelector("#uploadform").submit();
+    });
+
+    // Modal functionality
+    const createBoardBtn = document.getElementById('createBoardBtn');
+    const createBoardModal = document.getElementById('createBoardModal');
+    const cancelCreateBoard = document.getElementById('cancelCreateBoard');
+
+    createBoardBtn.addEventListener('click', () => {
+        createBoardModal.classList.remove('hidden');
+    });
+
+    cancelCreateBoard.addEventListener('click', () => {
+        createBoardModal.classList.add('hidden');
+    });
+
+    createBoardModal.addEventListener('click', (e) => {
+        if (e.target === createBoardModal) {
+            createBoardModal.classList.add('hidden');
+        }
+    });
+</script>
+
+<% include ./partials/footer.ejs %>
