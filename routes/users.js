@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   fullname: String,
   profileImage: String,
   contact: Number,
-  boards: [{ type: mongoose.Schema.Types.ObjectId, ref: "Board" }],
+  boards: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Board' }],
   posts: [
     {
       type: mongoose.Schema.Types.ObjectId,

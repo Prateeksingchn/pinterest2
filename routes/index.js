@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const userModel = require("./models/users");
-const postModel = require("./models/post");
-const boardModel = require("./models/board");
+const userModel = require("./users");
+const postModel = require("./post");
+const boardModel = require("./board");
 const passport = require('passport');
 const localStrategy = require('passport-local');
 const upload = require('./multer');
@@ -19,10 +19,15 @@ router.get('/register', function(req, res, next) {
 
 router.get('/profile', isLoggedIn, async function(req, res, next) {
   try {
-    const user = await userModel
-      .findOne({username: req.session.passport.user})
-      .populate("posts")
-      .populate("boards");
+    const user = await userModel.findOne({username: req.session.passport.user})
+      .populate({
+        path: 'boards',
+        populate: {
+          path: 'posts',
+          model: 'Post'
+        }
+      })
+      .populate('posts');
     res.render('profile', {user, nav: true});
   } catch (error) {
     console.error(error);
@@ -66,16 +71,22 @@ router.get('/feed', isLoggedIn, async function(req, res, next) {
 });
 
 router.get('/add', isLoggedIn, async function(req, res, next) {
-  const user = await userModel.findOne({username: req.session.passport.user});
-  res.render('add', {user, nav: true});
+  try {
+    const user = await userModel.findOne({username: req.session.passport.user}).populate("boards");
+    res.render('add', {user, nav: true});
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
-router.post('/createpost', isLoggedIn, upload.single("postimage"), async function(req, res, next) {
+router.post('/createpost', isLoggedIn, upload.single('postimage'), async function(req, res, next) {
   try {
     const user = await userModel.findOne({username: req.session.passport.user});
-    
-    if (!user) {
-      return res.status(404).send("User not found");
+    const board = await boardModel.findById(req.body.board);
+
+    if (!user || !board) {
+      return res.status(404).send("User or Board not found");
     }
 
     const post = await postModel.create({
@@ -85,20 +96,18 @@ router.post('/createpost', isLoggedIn, upload.single("postimage"), async functio
       image: req.file.filename
     });
 
-    if (!post) {
-      return res.status(500).send("Failed to create post");
-    }
-
     user.posts.push(post._id);
     await user.save();
 
-    res.redirect("/profile");
+    board.posts.push(post._id);
+    await board.save();
+
+    res.redirect('/profile');
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error: " + error.message);
   }
 });
-
 router.post('/fileupload', isLoggedIn, upload.single("image"), async function(req, res, next) {
   const user = await userModel.findOne({username: req.session.passport.user});
   user.profileImage = req.file.filename;
@@ -165,7 +174,7 @@ router.post('/create-board', isLoggedIn, async function(req, res, next) {
     res.redirect("/profile");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error: " + error.message);
   }
 });
 

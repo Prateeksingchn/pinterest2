@@ -34,7 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Corrected Passport serialization
-const User = require('./models/users');
+const User = require('./routes/users'); // Updated path
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
